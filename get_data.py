@@ -30,7 +30,7 @@ tickers = [
     "BAC",   # Bank of America
     "CSCO",  # Cisco Systems
     "CRM",   # Salesforce
-    "ADBE",  # Adobe
+    "SAP",   # SAP SE
     "DIS",   # Walt Disney
     "TMO",   # Thermo Fisher Scientific
     "MCD",   # McDonald's
@@ -54,24 +54,25 @@ tickers = [
     "SBUX"   # Starbucks
 ]
 
+RF_rate = 0
 
-start = '2014-01-01'
-end = '2025-01-01'
-start_year = start[0:5]
-end_year = end[0:5]
+if __name__ == "__main__":
+    start = '2013-01-01'
+    end = '2025-01-01'
+    start_year = start[0:4]
+    end_year = end[0:4]
 
-complete_data = yf.download(tickers, start=start, end=end)  # Meta IPO 2012
+    complete_data = yf.download(tickers, start=start, end=end)  # Meta IPO 2012
 
-# Check what columns exist
-print(complete_data.columns.levels[0])
+    # Check what columns exist
+    print(complete_data.columns.levels[0])
 
-# Use "Close" instead of "Adj Close"
-if 'Adj Close' in complete_data.columns.levels[0]:
-    target_price_data = complete_data['Adj Close']
-else:
-    target_price_data = complete_data['Close']
+    # Use "Close" instead of "Adj Close"
+    if 'Adj Close' in complete_data.columns.levels[0]:
+        target_price_data = complete_data['Adj Close']
+    else:
+        target_price_data = complete_data['Close']
 
-target_price_data.to_csv(f"stocks_close_{start_year}_{end_year}.csv")
+    target_price_data.to_csv(f"stocks_close_{start_year}_{end_year}.csv")
 
-print("✅ Saved closing prices:", target_price_data.shape)
-
+    print("✅ Saved closing prices:", target_price_data.shape)
