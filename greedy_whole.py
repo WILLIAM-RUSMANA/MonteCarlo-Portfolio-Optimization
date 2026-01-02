@@ -415,6 +415,7 @@ def greedy_portfolio_allocation(
     return {
         "shares": allocation_result["shares"],
         "cash_remaining": allocation_result["cash_remaining"],
+        "stock_prices": allocation_result["stock_prices"],
     }
 
 
