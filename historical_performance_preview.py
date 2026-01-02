@@ -6,7 +6,7 @@ if __name__ == "__main__":
     # -----------------------------
     # Load data
     # -----------------------------
-    df = pd.read_csv("stocks_close_2013_2025.csv")
+    df = pd.read_csv("data/stocks_close_2013_2025.csv")
 
     df["Date"] = pd.to_datetime(df["Date"])
     df.set_index("Date", inplace=True)

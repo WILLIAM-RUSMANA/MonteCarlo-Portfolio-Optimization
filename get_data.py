@@ -73,6 +73,6 @@ if __name__ == "__main__":
     else:
         target_price_data = complete_data['Close']
 
-    target_price_data.to_csv(f"stocks_close_{start_year}_{end_year}.csv")
+    target_price_data.to_csv(f"data/stocks_close_{start_year}_{end_year}.csv")
 
     print("✅ Saved closing prices:", target_price_data.shape)

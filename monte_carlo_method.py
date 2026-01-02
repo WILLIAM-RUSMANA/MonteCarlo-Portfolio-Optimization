@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 # Configuration
-csv = 'stocks_close_2013_2025.csv'  # Replace with your CSV file path
+csv = 'data/stocks_close_2013_2025.csv'  # Replace with your CSV file path
 NUM_SIMULATIONS = 10000
 TRADING_DAYS_PER_YEAR = 252
 
