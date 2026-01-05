@@ -57,8 +57,8 @@ tickers = [
 RF_rate = 0
 
 if __name__ == "__main__":
-    start = "2013-01-01"
-    end = "2025-01-01"
+    start = "2025-01-01"
+    end = "2026-01-01"
     start_year = start[0:4]
     end_year = end[0:4]
 

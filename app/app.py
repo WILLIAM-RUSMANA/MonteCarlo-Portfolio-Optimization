@@ -11,6 +11,7 @@ from monte_carlo_method import monte_carlo_method
 from greedy import greedy_portfolio_allocation as greedy_cont
 from greedy_whole import greedy_portfolio_allocation as greedy_whole
 from equal_weight import equal_weight_allocation
+from constants import CSV_FILE, CSV_BACKTEST
 
 
 # Page config
@@ -43,7 +44,7 @@ def run_monte_carlo():
 
 @st.cache_data
 def load_prices():
-    df = pd.read_csv("data/stocks_close_2013_2025.csv", parse_dates=["Date"])
+    df = pd.read_csv(CSV_BACKTEST, parse_dates=["Date"])
     df.set_index("Date", inplace=True)
     return df
 
