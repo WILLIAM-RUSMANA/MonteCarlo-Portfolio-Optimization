@@ -175,10 +175,12 @@ elif page == "DP Knapsack":
             )
 
             # Pie chart
-            df = pd.DataFrame({
-                "Stock": list(allocations.keys()),
-                "Weight": list(allocations.values()),
-            })
+            df = pd.DataFrame(
+                {
+                    "Stock": list(allocations.keys()),
+                    "Weight": list(allocations.values()),
+                }
+            )
 
             fig = px.pie(
                 df,
@@ -204,7 +206,9 @@ elif page == "DP Knapsack":
             # Sidebar
             st.sidebar.subheader("Allocation Weights")
             st.sidebar.caption("Sorted by weight (descending)")
-            for ticker, w in sorted(allocations.items(), key=lambda x: x[1], reverse=True):
+            for ticker, w in sorted(
+                allocations.items(), key=lambda x: x[1], reverse=True
+            ):
                 st.sidebar.write(f"**{ticker}**: {w:.2%}")
 
             # Historical

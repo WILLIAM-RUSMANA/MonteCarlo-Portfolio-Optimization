@@ -64,18 +64,33 @@ def dp_knapsack_portfolio_allocation(
                     _, prev_w = dp[prev_u]
                     cand = {**prev_w, stock: w}
                     total = sum(cand.values())
-                    norm = {s: v / total for s, v in cand.items()} if total > 0 else cand
+                    norm = (
+                        {s: v / total for s, v in cand.items()} if total > 0 else cand
+                    )
 
-                    ret = sum(norm.get(s, 0) * sharpe_ratios[s]["mean_return"] for s in selected)
-                    var = sum(norm.get(s, 0) ** 2 * sharpe_ratios[s]["std_return"] ** 2 for s in selected)
+                    ret = sum(
+                        norm.get(s, 0) * sharpe_ratios[s]["mean_return"]
+                        for s in selected
+                    )
+                    var = sum(
+                        norm.get(s, 0) ** 2 * sharpe_ratios[s]["std_return"] ** 2
+                        for s in selected
+                    )
                     sharpe = calculate_sharpe_ratio(ret, np.sqrt(var))
 
-                    if prev_u + alloc_u not in new_dp or sharpe > new_dp[prev_u + alloc_u][0]:
+                    if (
+                        prev_u + alloc_u not in new_dp
+                        or sharpe > new_dp[prev_u + alloc_u][0]
+                    ):
                         new_dp[prev_u + alloc_u] = (sharpe, cand)
         dp = new_dp
 
     # Extract best allocation
-    best = max((dp[u] for u in range(max(0, units - 10), units + 1) if u in dp), default=(0, {}), key=lambda x: x[0])
+    best = max(
+        (dp[u] for u in range(max(0, units - 10), units + 1) if u in dp),
+        default=(0, {}),
+        key=lambda x: x[0],
+    )
     allocations = best[1] if best[1] else {s: 1.0 / len(selected) for s in selected}
 
     # Normalize
@@ -84,8 +99,12 @@ def dp_knapsack_portfolio_allocation(
         allocations = {s: w / total for s, w in allocations.items()}
 
     # Compute metrics
-    portfolio_return = sum(allocations[s] * sharpe_ratios[s]["mean_return"] for s in allocations)
-    portfolio_variance = sum(allocations[s] ** 2 * sharpe_ratios[s]["std_return"] ** 2 for s in allocations)
+    portfolio_return = sum(
+        allocations[s] * sharpe_ratios[s]["mean_return"] for s in allocations
+    )
+    portfolio_variance = sum(
+        allocations[s] ** 2 * sharpe_ratios[s]["std_return"] ** 2 for s in allocations
+    )
     portfolio_std = np.sqrt(portfolio_variance)
     portfolio_sharpe = calculate_sharpe_ratio(portfolio_return, portfolio_std)
 
