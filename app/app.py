@@ -8,9 +8,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
 
 from monte_carlo_method import monte_carlo_method
-from greedy import greedy_portfolio_allocation
-from equal_weight import equal_weight_allocation
-from dp_knapsack import dp_knapsack_portfolio_allocation
+from algorithms.greedy import greedy_portfolio_allocation
+from algorithms.equal_weight import equal_weight_allocation
+from algorithms.dp_knapsack import dp_knapsack_portfolio_allocation
 from constants import CSV_BACKTEST
 
 

@@ -1,7 +1,7 @@
 from monte_carlo_method import monte_carlo_method
 from greedy_whole import greedy_portfolio_allocation as greedy_whole
-from greedy import greedy_portfolio_allocation as greedy
-from dp_knapsack import dp_knapsack_portfolio_allocation
+from algorithms.greedy import greedy_portfolio_allocation as greedy
+from algorithms.dp_knapsack import dp_knapsack_portfolio_allocation
 
 
 if __name__ == "__main__":
