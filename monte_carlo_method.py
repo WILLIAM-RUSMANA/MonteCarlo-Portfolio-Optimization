@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from constants import CSV_FILE, NUM_SIMULATIONS, TRADING_DAYS_PER_YEAR
 
+
 def load_and_prepare_data(filepath):
     """Load CSV and prepare data for analysis"""
     df = pd.read_csv(filepath)
@@ -114,7 +115,9 @@ def plot_top_stocks(results, top_n=10):
     plt.show()
 
 
-def monte_carlo_method(num_simulations=NUM_SIMULATIONS, trading_days_per_year=TRADING_DAYS_PER_YEAR):
+def monte_carlo_method(
+    num_simulations=NUM_SIMULATIONS, trading_days_per_year=TRADING_DAYS_PER_YEAR
+):
     print("Loading stock data...")
     prices = load_and_prepare_data(CSV_FILE)
 
