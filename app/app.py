@@ -11,7 +11,8 @@ from monte_carlo_method import monte_carlo_method
 from greedy import greedy_portfolio_allocation as greedy_cont
 from greedy_whole import greedy_portfolio_allocation as greedy_whole
 from equal_weight import equal_weight_allocation
-from constants import CSV_FILE, CSV_BACKTEST
+from dp_knapsack import dp_knapsack_portfolio_allocation
+from constants import CSV_BACKTEST
 
 
 # Page config
@@ -32,7 +33,7 @@ amount = st.number_input(
 st.sidebar.title("Navigation")
 page = st.sidebar.radio(
     "Select Algorithm",
-    ["Greedy", "Algorithm 2", "Algorithm 3"],
+    ["Greedy", "DP Knapsack", "Equal Weight"],
 )
 
 
@@ -157,60 +158,68 @@ if page == "Greedy":
             prices = load_prices()
             st.line_chart(prices)
     else:
-        st.info(" set amount here")
+        st.info("Set amount here")
 
 # ========== PAGE 2: ALGORITHM 2  ==========
-elif page == "Algorithm 2":
-    st.header("Algorithm 2")
+elif page == "DP Knapsack":
+    st.header("DP Knapsack Algorithm")
 
-    st.info("for algo 2 ")
+    if st.button("Run Allocation", type="primary", key="dp_btn"):
+        with st.spinner("Running Monte Carlo and DP Knapsack allocation..."):
+            results = run_monte_carlo()
 
-    # Dummy allocation
-    dummy_alloc = {
-        "AAPL": 0.25,
-        "MSFT": 0.20,
-        "NVDA": 0.15,
-        "GOOGL": 0.15,
-        "AMZN": 0.10,
-        "META": 0.10,
-        "TSLA": 0.05,
-    }
-    dummy_proj_return = 0.18  # placeholder
+            allocations, dp_results = dp_knapsack_portfolio_allocation(
+                results,
+                target_num_stocks=50,
+                display_results=False,
+            )
 
-    # Pie chart
-    df_dummy = pd.DataFrame(
-        {
-            "Stock": list(dummy_alloc.keys()),
-            "Weight": list(dummy_alloc.values()),
-        }
-    )
+            # Pie chart
+            df = pd.DataFrame({
+                "Stock": list(allocations.keys()),
+                "Weight": list(allocations.values()),
+            })
 
-    fig_dummy = px.pie(df_dummy, names="Stock", values="Weight", title="dummy algo 3 ")
-    st.plotly_chart(fig_dummy, width="stretch")
+            fig = px.pie(
+                df,
+                names="Stock",
+                values="Weight",
+                title="DP Knapsack Allocation",
+            )
+            st.plotly_chart(fig, width="stretch")
 
-    # Metrics
-    st.metric("Projected annual return (dummy)", f"{dummy_proj_return:.2%}")
-    st.metric("Cash remaining (dummy)", "$1,234.56")
+            # Metrics
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric(
+                    "Projected annual return",
+                    f"{dp_results['portfolio_return']:.2%}",
+                )
+            with col2:
+                st.metric(
+                    "Portfolio Sharpe Ratio",
+                    f"{dp_results['portfolio_sharpe']:.4f}",
+                )
 
-    # Sidebar
-    st.sidebar.subheader("Shares to Buy")
-    st.sidebar.caption("Placeholder data")
-    st.sidebar.write("**AAPL**: 50 shares")
-    st.sidebar.write("**MSFT**: 40 shares")
-    st.sidebar.write("**NVDA**: 30 shares")
-    st.sidebar.divider()
-    st.sidebar.write("**Cash remaining**: $1,234.56")
+            # Sidebar
+            st.sidebar.subheader("Allocation Weights")
+            st.sidebar.caption("Sorted by weight (descending)")
+            for ticker, w in sorted(allocations.items(), key=lambda x: x[1], reverse=True):
+                st.sidebar.write(f"**{ticker}**: {w:.2%}")
 
-    # Historical
-    st.subheader("Historical Stock Performance")
-    ## prices = load_prices()
-    ## st.line_chart(prices)
+            # Historical
+            st.subheader("Historical Stock Performance")
+            prices = load_prices()
+            st.line_chart(prices)
+    else:
+        st.info("Set amount here")
+
 
 # ========== PAGE 3: ALGORITHM 3  ==========
-elif page == "Algorithm 3":
+elif page == "Equal Weight":
     st.header("Equal-Weight Algorithm")
 
-    if st.button("Run Allocation", type="primary"):
+    if st.button("Run Allocation", type="primary", key="eq_btn"):
         with st.spinner(
             "Running Monte Carlo simulation and equal-weight allocation..."
         ):
