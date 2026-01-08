@@ -428,24 +428,3 @@ def greedy_portfolio_allocation(
         "cash_remaining": allocation_result["cash_remaining"],
         "stock_prices": allocation_result["stock_prices"],
     }
-
-
-# Example usage
-if __name__ == "__main__":
-    print("This module should be imported and called with Monte Carlo results.")
-    print("\nExample usage:")
-    print("=" * 70)
-    print("from monte_carlo_stocks import monte_carlo_simulation")
-    print("from greedy_whole import greedy_portfolio_allocation")
-    print()
-    print("# After running Monte Carlo simulation and getting 'results'")
-    print("result = greedy_portfolio_allocation(")
-    print("    stocks_metrics=results,")
-    print("    amount=100000,")
-    print("    target_num_stocks=10")
-    print(")")
-    print()
-    print("# Access the results")
-    print("print(result['shares'])  # {'AAPL': 25, 'GOOGL': 15, ...}")
-    print("print(f\"Cash remaining: ${result['cash_remaining']:,.2f}\")")
-    print("=" * 70)

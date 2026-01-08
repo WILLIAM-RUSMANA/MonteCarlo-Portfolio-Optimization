@@ -15,7 +15,7 @@ def load_and_prepare_data(filepath):
 
 def calculate_returns(prices):
     """Calculate daily returns"""
-    return prices.pct_change().dropna()
+    return prices.pct_change().dropna()  # percentage change then, drops first NaN value
 
 
 def monte_carlo_simulation(returns, num_simulations=10000, days=252):
@@ -39,10 +39,10 @@ def monte_carlo_simulation(returns, num_simulations=10000, days=252):
         # Run simulations
         simulated_returns = np.random.normal(
             stock_mean, stock_std, size=(num_simulations, days)
-        )
+        )  # Draw numbers from the normal distribution 
 
         # Calculate cumulative returns for each simulation
-        cumulative_returns = (1 + simulated_returns).prod(axis=1) - 1
+        cumulative_returns = (1 + simulated_returns).prod(axis=1) - 1  # simulate what if scenarios
 
         results[stock] = {
             "simulated_annual_returns": cumulative_returns,
