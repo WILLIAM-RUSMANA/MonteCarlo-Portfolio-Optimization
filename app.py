@@ -14,6 +14,7 @@ from algorithms.equal_weight import equal_weight_allocation
 from algorithms.dp_knapsack import dp_knapsack_portfolio_allocation
 from greedy_whole import greedy_portfolio_allocation as greedy_whole_shares
 from dp_knapsack_whole import dp_knapsack_portfolio_allocation as dp_whole_shares
+from equal_whole import equal_weight_allocation as equal_whole_shares
 from constants import CSV_BACKTEST
 
 
@@ -49,7 +50,7 @@ def load_prices():
 
 # Shared function to render allocation results
 def render_allocation_results(allocations, results, title, prices, amount, whole_shares_result):
-    """Render pie chart, metrics, sidebar, and backtesting data"""
+    """Render pie chart, metrics, sidebar, and historical data"""
     
     # Sort allocations once at the beginning
     sorted_allocations = sorted(
@@ -75,7 +76,8 @@ def render_allocation_results(allocations, results, title, prices, amount, whole
     st.plotly_chart(fig, use_container_width=True)
 
     # Prepare recent_prices FIRST (needed for metrics calculation)
-    recent_prices = prices.last('252D')
+    # Use all available data from CSV
+    recent_prices = prices
 
     # Metrics
     col1, col2, col3 = st.columns(3)
@@ -97,18 +99,15 @@ def render_allocation_results(allocations, results, title, prices, amount, whole
         available_stocks = [s for s in all_stocks if s in prices.columns]
         
         if available_stocks:
-            # Get weights for available stocks
-            weights_dict = {ticker: weight for ticker, weight in sorted_allocations if ticker in available_stocks}
-            total_weight = sum(weights_dict.values())
-            normalized_weights = {ticker: weight/total_weight for ticker, weight in weights_dict.items()}
-            
-            # Calculate actual portfolio return using SAME date range as chart
+            # Calculate portfolio return using ORIGINAL weights (no normalization)
             weighted_returns = 0
             for ticker in available_stocks:
-                weight = normalized_weights[ticker]
-                # Use recent_prices (252D) for consistency with chart
-                stock_return = (recent_prices[ticker].iloc[-1] / recent_prices[ticker].iloc[0]) - 1
-                weighted_returns += weight * stock_return
+                # Get original weight from allocation
+                weight = dict(sorted_allocations).get(ticker, 0)
+                if weight > 0:
+                    # Calculate stock return over historical period
+                    stock_return = (recent_prices[ticker].iloc[-1] / recent_prices[ticker].iloc[0]) - 1
+                    weighted_returns += weight * stock_return
             
             st.metric(
                 "Actual Backtest Return",
@@ -119,27 +118,22 @@ def render_allocation_results(allocations, results, title, prices, amount, whole
             st.metric("Actual Backtest Return", "N/A")
 
     # Historical - use sampling for better performance
-    st.subheader("Backtesting Portfolio Performance (2025)")
+    st.subheader("Backtesting Stock Performance (2025)")
     
-    # Calculate portfolio collective return
+    # Calculate portfolio collective return using ORIGINAL weights
     all_stocks = [ticker for ticker, _ in sorted_allocations]
     available_stocks = [s for s in all_stocks if s in recent_prices.columns]
     
     if available_stocks:
-        # Get weights for available stocks only
-        weights_dict = {ticker: weight for ticker, weight in sorted_allocations if ticker in available_stocks}
-        total_weight = sum(weights_dict.values())
-        
-        # Normalize weights
-        normalized_weights = {ticker: weight/total_weight for ticker, weight in weights_dict.items()}
-        
-        # Calculate weighted portfolio returns
+        # Calculate weighted portfolio returns using ORIGINAL weights (no normalization)
         portfolio_values = pd.DataFrame()
         for ticker in available_stocks:
-            weight = normalized_weights[ticker]
-            # Normalize each stock to start at the input amount and multiply by weight
-            normalized_stock = (recent_prices[ticker] / recent_prices[ticker].iloc[0]) * amount * weight
-            portfolio_values[ticker] = normalized_stock
+            # Get original weight from allocation
+            weight = dict(sorted_allocations).get(ticker, 0)
+            if weight > 0:
+                # Normalize each stock to start at the input amount and multiply by weight
+                normalized_stock = (recent_prices[ticker] / recent_prices[ticker].iloc[0]) * amount * weight
+                portfolio_values[ticker] = normalized_stock
         
         # Sum all weighted stocks to get portfolio performance
         portfolio_performance = portfolio_values.sum(axis=1)
@@ -167,9 +161,11 @@ def render_allocation_results(allocations, results, title, prices, amount, whole
     
     # Display single table
     st.dataframe(alloc_df, hide_index=True, use_container_width=True, height=600)
+    
+    # Display cash remaining below the table
+    st.subheader("Cash Remaining")
+    st.metric("Unallocated Cash", f"${whole_shares_result['cash_remaining']:,.2f}")
 
-def print_cash_remaining(whole_share_results):
-    st.text(f'{whole_share_results["cash_remaining"]}')
 
 # ========== PAGE 1: GREEDY ==========
 if page == "Greedy":
@@ -204,7 +200,6 @@ if page == "Greedy":
                 amount,
                 whole_shares_result
             )
-            print_cash_remaining(whole_shares_result)
     else:
         st.info("Click 'Run Allocation' to generate portfolio")
 
@@ -241,14 +236,11 @@ elif page == "DP Knapsack":
                 amount,
                 whole_shares_result
             )
-            st.text(f'{whole_shares_result["cash_remaining"]}')
-            print_cash_remaining(whole_shares_result)
     else:
         st.info("Click 'Run Allocation' to generate portfolio")
 
 
 # ========== PAGE 3: EQUAL WEIGHT ==========
-# TODO: finish
 elif page == "Equal Weight":
     st.header("Equal-Weight Algorithm")
 
@@ -263,9 +255,14 @@ elif page == "Equal Weight":
                 display_results=False,
             )
 
-            # For equal weight, create a simple whole shares result (equal distribution)
-            # Note: You may want to create an equal_weight_whole.py file similar to the others
-            whole_shares_result = {"shares": {ticker: 0 for ticker in allocations_eq.keys()}}
+            # Get whole shares allocation using equal_whole
+            whole_shares_result = equal_whole_shares(
+                stocks_metrics=results,
+                amount=amount,
+                num_stocks=len(allocations_eq),
+                display_results=False,
+                plot_results=False
+            )
 
             prices = load_prices()
             render_allocation_results(
