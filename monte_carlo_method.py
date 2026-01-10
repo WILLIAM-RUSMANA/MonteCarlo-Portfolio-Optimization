@@ -15,7 +15,7 @@ def load_and_prepare_data(filepath):
 
 def calculate_returns(prices):
     """Calculate daily returns"""
-    return prices.pct_change().dropna()  # percentage change then, drops first NaN value
+    return prices.ffill().pct_change().dropna()  # percentage change then, drops first NaN value
 
 
 def monte_carlo_simulation(returns, num_simulations=10000, days=252):
