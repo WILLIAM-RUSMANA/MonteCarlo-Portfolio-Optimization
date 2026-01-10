@@ -116,10 +116,10 @@ def plot_top_stocks(results, top_n=10):
 
 
 def monte_carlo_method(
-    num_simulations=NUM_SIMULATIONS, trading_days_per_year=TRADING_DAYS_PER_YEAR
+    num_simulations=NUM_SIMULATIONS, trading_days_per_year=TRADING_DAYS_PER_YEAR, csv_data=CSV_FILE_50
 ):
     print("Loading stock data...")
-    prices = load_and_prepare_data(CSV_FILE_50)
+    prices = load_and_prepare_data(csv_data)
 
     print(f"Data loaded: {len(prices)} days of data")
     print(f"Date range: {prices.index[0].date()} to {prices.index[-1].date()}")

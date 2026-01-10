@@ -56,8 +56,8 @@ tickers = [
 
 
 if __name__ == "__main__":
-    start = "2025-01-01"
-    end = "2026-01-01"
+    start = "2013-01-01"
+    end = "2024-12-31"
     start_year = start[0:4]
     end_year = end[0:4]
 
@@ -72,6 +72,6 @@ if __name__ == "__main__":
     else:
         target_price_data = complete_data["Close"]
 
-    target_price_data.to_csv(f"data/stocks_close_{start_year}_{end_year}.csv")
+    target_price_data.to_csv(f"data/50stocks_close_{start_year}_{end_year}.csv")
 
     print("Saved closing prices:", target_price_data.shape)

@@ -96,7 +96,7 @@ def benchmark_all_algorithms(stocks_metrics: Dict, target_num_stocks: int = 50, 
     print("=" * 100)
     
     for name, func, kwargs in algorithms:
-        print(f"\nBenchmarking {name}...")
+        print(f"\nBenchmarking {name}... {target_num_stocks}")
         metrics = measure_algorithm(func, stocks_metrics, name, num_runs, **kwargs)
         results.append(metrics)
     
