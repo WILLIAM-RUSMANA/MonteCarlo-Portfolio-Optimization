@@ -51,7 +51,7 @@ def greedy_portfolio_allocation(
 
     # Allocate weights proportional to Sharpe ratio
     total_sharpe = sum(
-        s[1]["sharpe_ratio"] for s in selected if s[1]["sharpe_ratio"] > 0
+        s[1]["sharpe_ratio"] for s in selected if s[1]["sharpe_ratio"] > 0  # s[1] is stock_metrics
     )
 
     if total_sharpe > 0:
@@ -71,7 +71,7 @@ def greedy_portfolio_allocation(
         # Normalize
         total = sum(allocations.values())
         if total > 0:
-            allocations = {s: w / total for s, w in allocations.items()}
+            allocations = {s: w / total for s, w in allocations.items()}  # change back to 100%
     else:
         allocations = {}
 
